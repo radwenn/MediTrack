@@ -1,0 +1,166 @@
+<!-- features/utilisateurs/ajouter-utilisateur/ajouter-utilisateur.component.html -->
+<div class="page-layout">
+  <app-sidebar />
+
+  <div class="page-content">
+    <app-topbar titre="Nouveau compte" sousTitre="Créer un compte utilisateur" />
+
+    <div class="main-area">
+
+      <!-- ── En-tête de la page ── -->
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>Créer un compte</h1>
+          <p>Les champs marqués * sont obligatoires</p>
+        </div>
+        <a routerLink="/utilisateurs" class="btn btn-outline">
+          <i class="fa-solid fa-arrow-left"></i> Retour
+        </a>
+      </div>
+
+      <!-- ── Message de succès ── -->
+      @if (succes()) {
+        <div class="alert-success">
+          <i class="fa-solid fa-circle-check"></i> Compte créé avec succès ! Redirection...
+        </div>
+      }
+
+      <!-- ── Messages d'erreur ── -->
+      @if (erreurs().length > 0) {
+        <div class="alert-danger">
+          @for (e of erreurs(); track e) {
+            <div>
+              <i class="fa-solid fa-triangle-exclamation"></i> {{ e }}
+            </div>
+          }
+        </div>
+      }
+
+      <!-- ── Formulaire ── -->
+      <div class="card">
+        <div class="section-title">
+          <div class="dot"></div> Informations du compte
+        </div>
+
+        <div class="form-grid">
+
+          <!-- Nom complet -->
+          <div class="form-group full">
+            <label>Nom complet *</label>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="ex: Dr. Ahmed Ben Ali"
+              [value]="nom()"
+              (input)="nom.set($any($event.target).value)" />
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label>Adresse email *</label>
+            <input
+              type="email"
+              class="form-control"
+              placeholder="ex: ahmed@gmail.com"
+              [value]="email()"
+              (input)="email.set($any($event.target).value)" />
+          </div>
+
+          <!-- Rôle -->
+          <div class="form-group">
+            <label>Rôle *</label>
+            <select class="form-control"
+                    [value]="role()"
+                    (change)="role.set($any($event.target).value)">
+              <option value="medecin">Médecin</option>
+              <option value="admin">Administrateur</option>
+            </select>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── Sécurité ── -->
+      <div class="card">
+        <div class="section-title">
+          <div class="dot"></div> Sécurité
+        </div>
+
+        <div class="form-group">
+          <label>Mot de passe * (minimum 4 caractères)</label>
+          <div class="password-wrap">
+            <input
+              [type]="showPassword() ? 'text' : 'password'"
+              class="form-control"
+              placeholder="Choisissez un mot de passe..."
+              [value]="password()"
+              (input)="password.set($any($event.target).value)" />
+            <button class="show-btn" type="button" (click)="togglePassword()">
+              <i [class]="showPassword() ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Indicateur de force du mot de passe -->
+        @if (password().length > 0) {
+          <div class="password-strength">
+            <div class="strength-bar">
+              <div class="strength-fill"
+                   [class]="password().length >= 8 ? 'fort' : password().length >= 4 ? 'moyen' : 'faible'"
+                   [style.width]="(password().length >= 8 ? 100 : password().length >= 4 ? 60 : 30) + '%'">
+              </div>
+            </div>
+
+            <span class="strength-label"
+                  [class]="password().length >= 8 ? 'fort' : password().length >= 4 ? 'moyen' : 'faible'">
+
+              <i class="fa-solid"
+                 [class.fa-check-circle]="password().length >= 8"
+                 [class.fa-triangle-exclamation]="password().length >= 4 && password().length < 8"
+                 [class.fa-times-circle]="password().length < 4">
+              </i>
+
+              {{ password().length >= 8 ? 'Fort' : password().length >= 4 ? 'Moyen' : 'Faible' }}
+            </span>
+          </div>
+        }
+      </div>
+
+      <!-- ── Aperçu du rôle sélectionné ── -->
+      <div class="card role-preview" [class.admin-preview]="role() === 'admin'">
+        <div class="role-icon">
+          <i class="fa-solid"
+             [class.fa-shield-halved]="role() === 'admin'"
+             [class.fa-stethoscope]="role() !== 'admin'">
+          </i>
+        </div>
+
+        <div>
+          <div class="role-titre">
+            {{ role() === 'admin' ? 'Administrateur' : 'Médecin' }}
+          </div>
+
+          <div class="role-desc">
+            @if (role() === 'admin') {
+              Accès complet : gestion des patients, consultations, comptes et paramètres.
+            } @else {
+              Accès aux patients et consultations. Pas d'accès à la gestion des comptes.
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Boutons d'action ── -->
+      <div class="form-actions">
+        <a routerLink="/utilisateurs" class="btn btn-outline">
+          <i class="fa-solid fa-xmark"></i> Annuler
+        </a>
+
+        <button class="btn btn-primary" (click)="enregistrer()">
+          <i class="fa-solid fa-user-plus"></i> Créer le compte
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

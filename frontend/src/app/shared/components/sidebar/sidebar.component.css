@@ -1,0 +1,83 @@
+/* shared/components/sidebar/sidebar.component.css */
+.sidebar {
+  width: var(--sidebar-width);
+  min-height: 100vh;
+  background: var(--navy);
+  display: flex; flex-direction: column;
+  position: fixed; left: 0; top: 0; bottom: 0;
+  z-index: 100;
+}
+.sidebar-logo {
+  padding: 28px 20px 24px;
+ border-top: 1px solid #ffffff10;
+  display: flex; align-items: center; gap: 10px;
+}
+.logo-icon {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, var(--teal), var(--blue));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: white;
+}
+.logo-text { font-family: 'Fraunces', serif; font-size: 20px; color: white; font-weight: 600; }
+.logo-text span { color: var(--teal); }
+
+.nav-section { padding: 20px 12px 8px; flex: 1; }
+.nav-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 1.5px;
+  color: #3D5A80; text-transform: uppercase; padding: 0 8px; margin-bottom: 8px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 12px; border-radius: 10px;
+  color: #6B85A0; font-size: 14px; font-weight: 500;
+  cursor: pointer; text-decoration: none;
+  transition: all 0.2s; margin-bottom: 2px; position: relative;
+}
+.nav-item:hover { background: #ffffff08; color: #90A8C0; }
+.nav-item.active { background: linear-gradient(90deg,#00C9A715,#1E6FFF10); color: white; }
+.nav-item.active::before {
+  content: ''; position: absolute; left: 0; top: 6px; bottom: 6px;
+  width: 3px; background: linear-gradient(180deg, var(--teal), var(--blue));
+  border-radius: 0 3px 3px 0;
+}
+.nav-icon  { font-size: 17px; width: 20px; text-align: center; }
+.nav-badge {
+  margin-left: auto; background: var(--blue); color: white;
+  font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 100px;
+}
+.nav-gap { height: 16px; }
+
+/* 🆕 Affichage rapide des tarifs */
+.tarifs-quick {
+  margin: 0 12px 12px;
+  background: #ffffff08;
+  border: 1px solid #ffffff15;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.tq-titre {
+  font-size: 10px; font-weight: 700; color: #3D5A80;
+  text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.tq-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 12px; color: #6B85A0; margin-bottom: 4px;
+}
+.tq-teal  { color: var(--teal); }
+.tq-amber { color: var(--amber); }
+
+.sidebar-user {
+  padding: 20px; 
+  display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid #ffffff10;
+}
+.user-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: white; flex-shrink: 0;
+}
+.user-name { font-size: 13px; font-weight: 600; color: white; }
+.user-role { font-size: 11px; color: var(--muted); }

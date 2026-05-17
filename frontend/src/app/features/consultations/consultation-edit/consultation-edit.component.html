@@ -1,0 +1,352 @@
+<!-- features/consultations/consultation-edit/consultation-edit.component.html -->
+
+<div class="page-layout">
+  <app-sidebar />
+
+  <div class="page-content">
+
+    <app-topbar
+      titre="Modifier la Consultation"
+      [sousTitre]="'Patient : ' + patientNomAffiche()"
+    />
+
+    <div class="main-area">
+
+      @if (introuvable()) {
+
+        <div class="card" style="text-align:center;padding:60px">
+
+          <i class="fa-solid fa-file-circle-xmark empty-icon"></i>
+
+          <p>Consultation introuvable.</p>
+
+          <a
+            routerLink="/consultations"
+            class="btn btn-primary"
+            style="margin-top:16px"
+          >
+            <i class="fa-solid fa-arrow-left"></i>
+            Retour
+          </a>
+
+        </div>
+
+      } @else {
+
+        @if (succes()) {
+          <div class="alert-success">
+            <i class="fa-solid fa-circle-check"></i>
+            Modifications enregistrées ! Redirection...
+          </div>
+        }
+
+        @if (erreurs().length > 0) {
+          <div class="alert-error">
+            @for (e of erreurs(); track e) {
+              <div>
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                {{ e }}
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Informations générales -->
+
+        <div class="card">
+
+          <div class="section-title">
+            <i class="fa-solid fa-calendar-check"></i>
+            Informations générales
+          </div>
+
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label>
+                <i class="fa-solid fa-calendar-days"></i>
+                Date *
+              </label>
+
+              <input
+                type="date"
+                class="form-control"
+                [value]="date()"
+                (input)="date.set($any($event.target).value)"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>
+                <i class="fa-solid fa-notes-medical"></i>
+                Type
+              </label>
+
+              <select
+                class="form-control"
+                [value]="type()"
+                (change)="onTypeChange($any($event.target).value)"
+              >
+                <option>Consultation générale</option>
+                <option>Suivi traitement</option>
+                <option>Urgence</option>
+                <option>Bilan annuel</option>
+                <option>Consultation de contrôle</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>
+                <i class="fa-solid fa-user-check"></i>
+                Statut lors de la consultation *
+              </label>
+
+              <select
+                class="form-control"
+                [value]="statutLorsDeConsultation()"
+                (change)="statutLorsDeConsultation.set($any($event.target).value)"
+              >
+                <option value="Régulier">Régulier</option>
+                <option value="Non Régulier">Non Régulier</option>
+              </select>
+            </div>
+
+
+          </div>
+
+        </div>
+
+        <!-- Constantes -->
+
+        <div class="card">
+
+          <div class="section-title">
+            <i class="fa-solid fa-heartbeat"></i>
+            Constantes vitales
+          </div>
+
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label>
+                <i class="fa-solid fa-heart-pulse"></i>
+                Tension (mmHg)
+              </label>
+
+              <input
+                type="text"
+                class="form-control"
+                [value]="tension()"
+                (input)="tension.set($any($event.target).value)"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>
+                <i class="fa-solid fa-wave-square"></i>
+                Pouls (bpm)
+              </label>
+
+              <input
+                type="number"
+                class="form-control"
+                [value]="pouls()"
+                (input)="pouls.set(+$any($event.target).value)"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>
+                <i class="fa-solid fa-temperature-three-quarters"></i>
+                Température (°C)
+              </label>
+
+              <input
+                type="number"
+                class="form-control"
+                step="0.1"
+                [value]="temperature()"
+                (input)="temperature.set(+$any($event.target).value)"
+              />
+            </div>
+
+            <div class="form-group">
+              <label>
+                <i class="fa-solid fa-weight-scale"></i>
+                Poids (kg)
+              </label>
+
+              <input
+                type="number"
+                class="form-control"
+                [value]="poids()"
+                (input)="poids.set(+$any($event.target).value)"
+              />
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Clinique -->
+
+        <div class="card">
+
+          <div class="section-title">
+            <i class="fa-solid fa-stethoscope"></i>
+            Informations cliniques
+          </div>
+
+          <div class="form-group">
+
+            <label>
+              <i class="fa-solid fa-comment-medical"></i>
+              Motif *
+            </label>
+
+            <textarea
+              class="form-control"
+              [value]="motif()"
+              (input)="motif.set($any($event.target).value)"
+            ></textarea>
+
+          </div>
+
+          <div class="form-group">
+
+            <label>
+              <i class="fa-solid fa-notes-medical"></i>
+              Observations
+            </label>
+
+            <textarea
+              class="form-control"
+              [value]="observations()"
+              (input)="observations.set($any($event.target).value)"
+            ></textarea>
+
+          </div>
+
+          <div class="form-group">
+
+            <label>
+              <i class="fa-solid fa-prescription-bottle-medical"></i>
+              Ordonnance / Traitement
+            </label>
+
+            <textarea
+              class="form-control"
+              [value]="ordonnance()"
+              (input)="ordonnance.set($any($event.target).value)"
+            ></textarea>
+
+          </div>
+
+        </div>
+
+        <!-- Photos -->
+
+        <div class="card">
+
+          <div class="section-title">
+            <i class="fa-solid fa-image"></i>
+            Photos d'analyses
+          </div>
+
+          <div
+            class="photos-upload-zone"
+            (click)="photoInput.click()"
+          >
+
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+
+            <div class="photos-upload-text">
+              <strong>Ajouter des photos</strong>
+
+              <span>
+                Résultats d'analyses, radios, ECG… (JPG, PNG, PDF)
+              </span>
+            </div>
+
+          </div>
+
+          <input
+            #photoInput
+            type="file"
+            accept="image/*,.pdf"
+            multiple
+            style="display:none"
+            (change)="onPhotoSelect($event)"
+          />
+
+          @if (photosAnalyses().length > 0) {
+
+            <div class="photos-grid">
+
+              @for (photo of photosAnalyses(); track $index; let i = $index) {
+
+                <div class="photo-thumb">
+
+                  @if (photo.startsWith('data:image')) {
+
+                    <img [src]="photo" alt="Analyse {{ i + 1 }}" />
+
+                  } @else {
+
+                    <div class="photo-pdf-icon">
+
+                      <i class="fa-solid fa-file-pdf"></i>
+
+                      <span>PDF {{ i + 1 }}</span>
+
+                    </div>
+
+                  }
+
+                  <button
+                    class="photo-remove"
+                    (click)="removePhoto(i)"
+                    title="Supprimer"
+                  >
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+
+                </div>
+
+              }
+
+            </div>
+
+          }
+
+        </div>
+
+        <!-- Actions -->
+
+        <div class="form-actions">
+
+          <a
+            [routerLink]="['/consultations', id]"
+            class="btn btn-outline"
+          >
+            <i class="fa-solid fa-xmark"></i>
+            Annuler
+          </a>
+
+          <button
+            class="btn btn-primary"
+            (click)="enregistrer()"
+          >
+            <i class="fa-solid fa-floppy-disk"></i>
+            Enregistrer les modifications
+          </button>
+
+        </div>
+
+      }
+
+    </div>
+
+  </div>
+
+</div>

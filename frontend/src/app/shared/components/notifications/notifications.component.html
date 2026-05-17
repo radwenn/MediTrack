@@ -1,0 +1,80 @@
+<!-- shared/components/notifications/notifications.component.html -->
+<div class="notif-wrap">
+
+  <!-- ── Bouton cloche ── -->
+  <button class="topbar-btn notif-btn" [class.notif-active]="count() > 0" (click)="toggle()" title="Notifications">
+    <i class="fa-regular fa-bell"></i>
+    @if (count() > 0) {
+      <span class="notif-badge">{{ count() > 9 ? '9+' : count() }}</span>
+    }
+  </button>
+
+  <!-- ── Panel dropdown ── -->
+  @if (ouvert()) {
+    <div class="notif-panel">
+
+      <div class="notif-header">
+        <div class="notif-header-title">
+          <i class="fa-solid fa-bell"></i>
+          Notifications
+        </div>
+        @if (count() > 0) {
+          <span class="notif-count-badge">{{ count() }}</span>
+        }
+      </div>
+
+      @if (notifs().length === 0) {
+        <div class="notif-empty">
+          <i class="fa-regular fa-circle-check"></i>
+          <p>Aucune notification</p>
+          <span>Tous vos patients chroniques ont été vus récemment.</span>
+        </div>
+      } @else {
+        <div class="notif-subtitle">
+          Patients chroniques à reconvoquer
+        </div>
+
+        <div class="notif-list">
+          @for (n of notifs(); track n.patient.id) {
+            <div class="notif-item" [class]="urgenceClass(n.joursDepuis)">
+              <div class="notif-avatar" [style.background]="n.patient.couleur">
+                {{ n.patient.initiales }}
+              </div>
+
+              <div class="notif-body">
+                <div class="notif-patient-name">
+                  {{ n.patient.prenom }} {{ n.patient.nom }}
+                </div>
+                <div class="notif-maladie">
+                  <i class="fa-solid fa-heart-pulse"></i>
+                  {{ n.patient.maladieChronique || 'Maladie chronique' }}
+                </div>
+                <div class="notif-delay">
+                  <i class="fa-regular fa-clock"></i>
+                  {{ joursLabel(n.joursDepuis) }}
+                  @if (n.derniereDate) {
+                    <span class="notif-last-date">· Dernière : {{ n.derniereDate | date:'dd/MM/yyyy' }}</span>
+                  }
+                </div>
+              </div>
+
+              <div class="notif-actions">
+                <button class="notif-action-btn notif-action-consult"
+                        title="Nouvelle consultation"
+                        (click)="naviguerVersConsultation(n.patient.id)">
+                  <i class="fa-solid fa-stethoscope"></i>
+                </button>
+                <button class="notif-action-btn notif-action-dismiss"
+                        title="Ignorer cette notification"
+                        (click)="dismiss(n.patient.id, $event)">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+    </div>
+  }
+</div>

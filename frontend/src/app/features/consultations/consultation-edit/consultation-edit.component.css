@@ -1,0 +1,45 @@
+/* features/consultations/consultation-edit/consultation-edit.component.css */
+.form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }
+.alert-success {
+  background: #f0fdf9; border: 1px solid var(--teal);
+  color: #047857; padding: 14px 16px; border-radius: 10px;
+  margin-bottom: 20px; font-weight: 600; font-size: 14px;
+}
+.alert-error {
+  background: #fff0f0; border: 1px solid var(--red);
+  color: #c41d2e; padding: 14px 16px; border-radius: 10px;
+  margin-bottom: 20px; font-size: 13px;
+}
+.not-found { text-align: center; padding: 80px 20px; }
+.nf-icon   { font-size: 48px; margin-bottom: 16px; }
+/* ── Photos analyses ── */
+.photos-upload-zone {
+  display: flex; align-items: center; gap: 16px;
+  border: 2px dashed var(--border); border-radius: 12px;
+  padding: 20px 24px; cursor: pointer; transition: all 0.2s; margin-bottom: 16px;
+}
+.photos-upload-zone:hover { border-color: var(--teal); background: #f0fdf9; }
+.photos-upload-zone i { font-size: 28px; color: var(--teal2); flex-shrink: 0; }
+.photos-upload-text { display: flex; flex-direction: column; gap: 3px; }
+.photos-upload-text strong { font-size: 14px; color: var(--text); }
+.photos-upload-text span { font-size: 12px; color: var(--muted); }
+.photos-grid { display: flex; flex-wrap: wrap; gap: 12px; }
+.photo-thumb {
+  position: relative; width: 100px; height: 100px;
+  border-radius: 10px; overflow: hidden;
+  border: 1.5px solid var(--border); background: var(--bg);
+}
+.photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.photo-pdf-icon {
+  width: 100%; height: 100%; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 4px;
+}
+.photo-pdf-icon i { font-size: 28px; color: var(--red); }
+.photo-pdf-icon span { font-size: 10px; color: var(--muted); font-weight: 600; }
+.photo-remove {
+  position: absolute; top: 4px; right: 4px;
+  width: 22px; height: 22px; border-radius: 50%; border: none;
+  background: rgba(0,0,0,0.55); color: white; font-size: 11px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.photo-remove:hover { background: var(--red); }

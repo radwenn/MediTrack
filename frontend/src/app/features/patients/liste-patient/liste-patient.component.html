@@ -1,0 +1,135 @@
+<!-- features/patients/liste-patient/liste-patient.component.html -->
+<div class="page-layout">
+  <app-sidebar />
+
+  <div class="page-content">
+    <app-topbar titre="Gestion des Patients" [sousTitre]="patientsFiltres().length + ' patient(s) affiché(s)'" />
+
+    <div class="main-area">
+
+      <!-- ── BARRE DE CONTRÔLE ── -->
+      <div class="controls-bar">
+        <div class="search-wrap">
+          <span class="search-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+          <input type="text" placeholder="Rechercher par nom, prénom, ID..."
+                 class="search-input"
+                 [value]="recherche()"
+                 (input)="recherche.set($any($event.target).value)" />
+        </div>
+
+        <select class="filter-select"
+                [value]="filtreStatut()"
+                (change)="filtreStatut.set($any($event.target).value)">
+          <option value="tous">Tous les statuts</option>
+          <option value="Régulier">Régulier</option>
+          <option value="Non Régulier">Non Régulier</option>
+        </select>
+
+        <select class="filter-select"
+                [value]="filtreChronique()"
+                (change)="filtreChronique.set($any($event.target).value)">
+          <option value="tous">Tous les profils</option>
+          <option value="oui">Chronique</option>
+          <option value="non">Non chronique</option>
+        </select>
+
+        <a routerLink="/patients/ajouter" class="btn btn-primary">
+          + Nouveau patient
+        </a>
+      </div>
+
+      <!-- ── TABLEAU ── -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Patient</th>
+              <th>Âge / Sexe</th>
+              <th>Statut</th>
+              <th>Profil médical</th>
+              <th>Consultations</th>
+              <th>Téléphone</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of patientsFiltres(); track p.id) {
+              <tr>
+                <!-- Identité -->
+                <td>
+                  <div class="patient-cell">
+                    <div class="avatar-mini" [style.background]="p.couleur">{{ p.initiales }}</div>
+                    <div>
+                      <div class="p-nom">{{ p.prenom }} {{ p.nom }}</div>
+                      <div class="p-id">{{ p.id }} · inscrit le {{ p.dateInscription }}</div>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Âge/Sexe -->
+                <td>{{ p.age }} ans / {{ p.sexe === 'M' ? 'Masculin' : 'Féminin' }}</td>
+
+                <!-- Statut Régulier/Non Régulier -->
+                <td>
+                  <span class="badge" [class]="badgeStatut(p.statutPatient)">
+                    {{ p.statutPatient }}
+                  </span>
+                </td>
+
+                <!-- Profil : chronique ou non -->
+                <td>
+                  @if (p.isChronique) {
+                    <div class="chrono-cell">
+                      <span class="badge badge-critical">Chronique</span>
+                      <span class="maladie-text">{{ p.maladieChronique }}</span>
+                    </div>
+                  } @else {
+                    <span class="badge badge-info">Non chronique</span>
+                  }
+                </td>
+
+                <!-- Nb consultations -->
+                <td>
+                  <span class="nb-consult">{{ p.historiqueConsultations.length }}</span>
+                </td>
+
+                <!-- Téléphone -->
+                <td class="tel-cell">{{ p.telephone }}</td>
+
+                <!-- Actions -->
+                <td>
+                  <div class="actions-cell">
+                    <a [routerLink]="['/patients', p.id]"
+                       class="btn btn-outline btn-sm" title="Voir fiche">
+                      <i class="fa-regular fa-eye"></i>
+                    </a>
+                    <a [routerLink]="['/patients', p.id, 'modifier']"
+                       class="btn btn-outline btn-sm" title="Modifier">
+                      <i class="fa-regular fa-pen-to-square"></i>
+                    </a>
+                    <button class="btn btn-danger btn-sm"
+                            title="Supprimer"
+                            (click)="supprimer(p.id, p.prenom + ' ' + p.nom)">
+                      <i class="fa-regular fa-trash-can"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7" class="empty-state">
+                  <div><i class="fa-regular fa-face-frown"></i></div>
+                  <p>Aucun patient ne correspond à votre recherche.</p>
+                  <a routerLink="/patients/ajouter" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-user-plus"></i> + Ajouter un patient
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>

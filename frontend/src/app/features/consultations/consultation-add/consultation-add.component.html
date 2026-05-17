@@ -1,0 +1,244 @@
+<!-- features/consultations/consultation-add/consultation-add.component.html -->
+<div class="page-layout">
+  <app-sidebar />
+  <div class="page-content">
+    <app-topbar titre="Nouvelle Consultation" sousTitre="Enregistrer une consultation patient" />
+
+    <div class="main-area">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>Nouvelle consultation</h1>
+          <p>Les champs marqués * sont obligatoires</p>
+        </div>
+        <a routerLink="/consultations" class="btn btn-outline">
+          <i class="fa-solid fa-arrow-left"></i> Retour
+        </a>
+      </div>
+
+      @if (succes()) {
+        <div class="alert-success">
+          <i class="fa-solid fa-circle-check"></i>
+          Consultation enregistrée avec succès ! Redirection...
+        </div>
+      }
+
+      @if (erreurs().length > 0) {
+        <div class="alert-error">
+          @for (e of erreurs(); track e) {
+            <div>
+              <i class="fa-solid fa-triangle-exclamation"></i> {{ e }}
+            </div>
+          }
+        </div>
+      }
+
+      <div class="card">
+        <div class="section-title">
+          <div class="dot"></div> Informations générales
+        </div>
+
+        <div class="form-grid">
+          <!-- Patient -->
+          <div class="form-group full">
+            <label>Patient *</label>
+            <select class="form-control"
+                    [value]="patientId()"
+                    (change)="onPatientChange($any($event.target).value)">
+              <option value="">-- Sélectionner un patient --</option>
+              @for (p of patients(); track p.id) {
+                <option [value]="p.id">
+                  {{ p.prenom }} {{ p.nom }} ({{ p.id }}) — {{ p.statutPatient }}
+                </option>
+              }
+            </select>
+          </div>
+
+          <!-- Date -->
+          <div class="form-group">
+            <label>Date *</label>
+            <input type="date" class="form-control"
+                   [value]="date()"
+                   (change)="date.set($any($event.target).value)" />
+          </div>
+
+          <!-- Type -->
+          <div class="form-group">
+            <label>Type de consultation</label>
+            <select class="form-control"
+                    [value]="type()"
+                    (change)="onTypeChange($any($event.target).value)">
+              <option>Consultation générale</option>
+              <option>Suivi traitement</option>
+              <option>Urgence</option>
+              <option>Bilan annuel</option>
+              <option>Consultation de contrôle</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Constantes vitales -->
+      <div class="card">
+        <div class="section-title">
+          <div class="dot"></div> Constantes vitales
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Tension artérielle (mmHg)</label>
+            <input type="text" class="form-control" placeholder="ex: 165/105"
+                   [value]="tension()"
+                   (input)="tension.set($any($event.target).value)" />
+          </div>
+
+          <div class="form-group">
+            <label>Pouls (bpm)</label>
+            <input type="number" class="form-control" placeholder="ex: 88"
+                   [value]="pouls()"
+                   (input)="pouls.set(+$any($event.target).value)" />
+          </div>
+
+          <div class="form-group">
+            <label>Température (°C)</label>
+            <input type="number" class="form-control" step="0.1" placeholder="ex: 37.2"
+                   [value]="temperature()"
+                   (input)="temperature.set(+$any($event.target).value)" />
+          </div>
+
+          <div class="form-group">
+            <label>Poids (kg)</label>
+            <input type="number" class="form-control" placeholder="ex: 78"
+                   [value]="poids()"
+                   (input)="poids.set(+$any($event.target).value)" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes cliniques -->
+      <div class="card">
+        <div class="section-title">
+          <div class="dot"></div> Notes cliniques
+        </div>
+
+        <div class="form-group">
+          <label>Motif de consultation *</label>
+          <textarea class="form-control" placeholder="Décrivez le motif..."
+                    [value]="motif()"
+                    (input)="motif.set($any($event.target).value)"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Observations cliniques</label>
+          <textarea class="form-control" placeholder="Examen clinique, symptômes..."
+                    [value]="observations()"
+                    (input)="observations.set($any($event.target).value)"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Ordonnance / Traitement prescrit</label>
+          <textarea class="form-control" placeholder="Médicaments, dosages, durée..."
+                    [value]="ordonnance()"
+                    (input)="ordonnance.set($any($event.target).value)"></textarea>
+        </div>
+      </div>
+
+      <!-- Photos analyses -->
+      <div class="card">
+        <div class="section-title">
+          <div class="dot"></div> Photos d'analyses
+          <span class="section-badge-optional">Optionnel</span>
+        </div>
+
+        <div class="photos-upload-zone" (click)="photoInput.click()">
+          <i class="fa-solid fa-image-medical"></i>
+          <div class="photos-upload-text">
+            <strong>Cliquez pour ajouter des photos</strong>
+            <span>Résultats d'analyses, radios, ECG… (JPG, PNG, PDF)</span>
+          </div>
+        </div>
+        <input #photoInput type="file" accept="image/*,.pdf" multiple
+               style="display:none" (change)="onPhotoSelect($event)" />
+
+        @if (photosAnalyses().length > 0) {
+          <div class="photos-grid">
+            @for (photo of photosAnalyses(); track $index; let i = $index) {
+              <div class="photo-thumb">
+                @if (photo.startsWith('data:image')) {
+                  <img [src]="photo" alt="Analyse {{ i + 1 }}" />
+                } @else {
+                  <div class="photo-pdf-icon">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    <span>PDF {{ i + 1 }}</span>
+                  </div>
+                }
+                <button class="photo-remove" (click)="removePhoto(i)" title="Supprimer">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Facturation -->
+      <div class="card">
+        <div class="section-title">
+          <div class="dot"></div> Facturation
+        </div>
+
+        @if (!isControle()) {
+          <div class="form-group">
+            <label>Statut lors de cette consultation</label>
+            <select class="form-control"
+                    [value]="statutLorsDeConsultation()"
+                    (change)="statutLorsDeConsultation.set($any($event.target).value)">
+              <option value="Régulier">Régulier</option>
+              <option value="Non Régulier">Non Régulier</option>
+            </select>
+          </div>
+        }
+
+        <!-- Aperçu -->
+        <div class="montant-preview" [class.montant-gratuit]="isControle()">
+          <div class="montant-detail">
+            <div class="montant-label">Tarif appliqué</div>
+
+            @if (isControle()) {
+              <div class="montant-explication">
+                Consultation de contrôle → <strong>Gratuite</strong>
+                <span class="montant-note">(suivi post-consultation)</span>
+              </div>
+            } @else if (statutLorsDeConsultation() === 'Régulier') {
+              <div class="montant-explication">
+                Patient Régulier → <strong>{{ tarifRegulier() }} DT</strong>
+                <span class="montant-note">(prise en charge CNAM)</span>
+              </div>
+            } @else {
+              <div class="montant-explication">
+                Patient Non Régulier → <strong>{{ tarifNonRegulier() }} DT</strong>
+                <span class="montant-note">(payé directement)</span>
+              </div>
+            }
+          </div>
+
+          <div class="montant-total">
+            <div class="montant-label">Montant à encaisser</div>
+            <div class="montant-valeur">{{ montant() }} DT</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <a routerLink="/consultations" class="btn btn-outline">
+          <i class="fa-solid fa-xmark"></i> Annuler
+        </a>
+
+        <button class="btn btn-primary" (click)="enregistrer()">
+          <i class="fa-solid fa-floppy-disk"></i> Enregistrer la consultation
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

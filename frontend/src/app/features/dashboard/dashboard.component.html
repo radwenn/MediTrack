@@ -1,0 +1,183 @@
+<!-- features/dashboard/dashboard.component.html -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<div class="page-layout">
+  <app-sidebar />
+
+  <div class="page-content">
+    <app-topbar titre="Tableau de bord" sousTitre="Bonjour, voici votre résumé" />
+
+    <div class="main-area">
+
+      <!-- ── STATISTIQUES PRINCIPALES ── -->
+      <div class="stats-grid">
+
+        <div class="stat-card teal">
+          <div class="stat-header">
+            <div class="stat-label">Patients total</div>
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+          </div>
+          <div class="stat-num">{{ stats().totalPatients }}</div>
+          <div class="stat-delta">
+            <span class="tag-regulier">{{ stats().reguliers }} Réguliers</span>
+            <span class="tag-sep">·</span>
+            <span class="tag-nonreg">{{ stats().nonReguliers }} Non Réguliers</span>
+          </div>
+        </div>
+
+        <div class="stat-card blue">
+          <div class="stat-header">
+            <div class="stat-label">Consultations</div>
+            <div class="stat-icon"><i class="fa-solid fa-notes-medical"></i></div>
+          </div>
+          <div class="stat-num">{{ stats().totalConsultations }}</div>
+          <div class="stat-delta">
+            <span class="delta-up">Toutes périodes</span>
+          </div>
+        </div>
+
+        
+
+        <div class="stat-card green">
+          <div class="stat-header">
+            <div class="stat-label">Revenu total cabinet</div>
+            <div class="stat-icon"><i class="fas fa-coins"></i></div>
+          </div>
+          <!-- stats().revenuTotal = revenuRegulier + revenuNonRegulier → toujours cohérent -->
+          <div class="stat-num">{{ stats().revenuTotal }} DT</div>
+          <div class="stat-delta">
+            <span class="delta-up">{{ stats().revenuMois }} DT</span>
+            <span style="margin-left:4px;color:var(--muted);font-size:11px">ce mois</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── RÉPARTITIONS ── -->
+      <div class="row-2">
+
+        <!-- Chroniques / Non chroniques -->
+        <div class="card">
+          <div class="section-title"><div class="dot"></div> Répartition des patients chroniques</div>
+          <div class="repartition-grid">
+            <div class="rep-item">
+              <div class="rep-circle chrono">{{ stats().chroniques }}</div>
+              <div class="rep-label">Chroniques</div>
+              <div class="rep-pct">{{ stats().pctChroniques }}%</div>
+            </div>
+            <div class="rep-divider"></div>
+            <div class="rep-item">
+              <div class="rep-circle non-chrono">{{ stats().nonChroniques }}</div>
+              <div class="rep-label">Non chroniques</div>
+              <div class="rep-pct">{{ 100 - stats().pctChroniques }}%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Réguliers / Non réguliers -->
+        <div class="card">
+          <div class="section-title"><div class="dot"></div> Répartition des patients réguliers</div>
+          <div class="repartition-grid">
+            <div class="rep-item">
+              <div class="rep-circle reg">{{ stats().reguliers }}</div>
+              <div class="rep-label">
+                Réguliers <span class="tarif">{{ tarifRegulier() }} DT</span>
+              </div>
+              <div class="rep-pct">
+                {{ stats().totalPatients ? (stats().reguliers / stats().totalPatients * 100 | number:'1.0-0') : 0 }}%
+              </div>
+            </div>
+            <div class="rep-divider"></div>
+            <div class="rep-item">
+              <div class="rep-circle non-reg">{{ stats().nonReguliers }}</div>
+              <div class="rep-label">
+                Non réguliers <span class="tarif">{{ tarifNonRegulier() }} DT</span>
+              </div>
+              <div class="rep-pct">
+                {{ stats().totalPatients ? (stats().nonReguliers / stats().totalPatients * 100 | number:'1.0-0') : 0 }}%
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Détail des revenus -->
+        <div class="card">
+          <div class="section-title"><div class="dot"></div> Détail des revenus</div>
+
+          <!-- Ligne Réguliers : somme réelle des consultations régulières -->
+          <div class="revenu-item">
+            <div class="revenu-label">
+              <span class="badge badge-stable">• Réguliers</span>
+            </div>
+            <div class="revenu-montant teal-text">
+              {{ stats().revenuRegulier }} DT
+            </div>
+          </div>
+
+          <!-- Ligne Non Réguliers : somme réelle des consultations non régulières -->
+          <div class="revenu-item">
+            <div class="revenu-label">
+              <span class="badge badge-warning">• Non Réguliers</span>
+            </div>
+            <div class="revenu-montant amber-text">
+              {{ stats().revenuNonRegulier }} DT
+            </div>
+          </div>
+
+          <!-- Total = revenuRegulier + revenuNonRegulier → toujours cohérent -->
+          <div class="revenu-total" style="margin-top:8px">
+            <span>Total :</span>
+            <strong style="color:var(--teal2)">{{ stats().revenuTotal }} DT</strong>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── CONSULTATIONS RÉCENTES ── -->
+      <div class="card">
+        <div class="card-header-row">
+          <div class="section-title" style="margin-bottom:0">
+            <div class="dot"></div> Consultations récentes
+          </div>
+          <a routerLink="/consultations/ajouter" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus"></i> Nouvelle consultation
+          </a>
+        </div>
+
+        <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead>
+              <tr>
+                <th>Patient</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Statut consultation</th>
+                <th>Montant</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (c of consultationsRecentes(); track c.id) {
+                <tr [routerLink]="['/consultations', c.id]" style="cursor:pointer">
+                  <td><strong>{{ c.patientNom }}</strong></td>
+                  <td>{{ c.date }}</td>
+                  <td>{{ c.type }}</td>
+                  <td>
+                    <span class="badge" [class]="badgeStatut(c.statutLorsDeConsultation)">
+                      {{ c.statutLorsDeConsultation }}
+                    </span>
+                  </td>
+                  <td><strong>{{ c.montant }} DT</strong></td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="5" class="empty-row">Aucune consultation enregistrée</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

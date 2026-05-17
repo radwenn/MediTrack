@@ -1,0 +1,13 @@
+<!-- shared/components/topbar/topbar.component.html -->
+<div class="topbar">
+  <div>
+    <div class="topbar-title">{{ titre() }}</div>
+    @if (sousTitre()) {
+      <div class="topbar-sub">{{ sousTitre() }}</div>
+    }
+  </div>
+  <div class="topbar-right">
+    <app-notifications />
+    <div class="date-badge">{{ today }}</div>
+  </div>
+</div>

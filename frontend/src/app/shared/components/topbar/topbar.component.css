@@ -1,0 +1,31 @@
+/* shared/components/topbar/topbar.component.css */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 36px; height: var(--topbar-height);
+  background: var(--white); border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 50; flex-wrap: wrap; gap: 12px;
+}
+.topbar-title { font-size: 20px; font-weight: 700; color: var(--text); }
+.topbar-sub   { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.search-box {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 9px 14px;
+  font-size: 13px; color: var(--muted);
+  min-width: 200px; cursor: text; transition: border-color 0.2s;
+}
+.search-box:hover { border-color: var(--teal2); }
+.topbar-btn {
+  width: 40px; height: 40px; border-radius: 10px;
+  border: 1.5px solid var(--border); background: var(--white);
+  font-size: 16px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.topbar-btn:hover { background: var(--bg); border-color: var(--teal2); }
+.date-badge {
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 9px 14px;
+  font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap;
+}

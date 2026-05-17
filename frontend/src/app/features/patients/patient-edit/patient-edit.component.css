@@ -1,0 +1,38 @@
+/* features/patients/patient-edit/patient-edit.component.css */
+.alert-success { background:#f0fdf9;border:1px solid var(--teal);color:#047857;padding:16px;border-radius:10px;margin-bottom:20px;font-weight:600;font-size:14px; }
+.alert-error   { background:#fff0f0;border:1px solid var(--red);color:#c41d2e;padding:14px 16px;border-radius:10px;margin-bottom:20px;font-size:13px;display:flex;flex-direction:column;gap:6px; }
+.form-actions  { display:flex;justify-content:flex-end;gap:12px;margin-top:4px; }
+
+.chronique-check { margin-bottom:4px; }
+.checkbox-label  { display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none; }
+.checkbox-label input[type="checkbox"] { display:none; }
+.checkmark { 
+  width:22px;
+  height:22px;
+  border-radius:6px;
+  flex-shrink:0;
+  border:2px solid var(--border);
+  background:white;
+  transition:all 0.2s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+}
+.checkbox-label input:checked + .checkmark { 
+  background:linear-gradient(135deg,var(--teal),var(--blue));
+  border-color:transparent;
+}
+.checkbox-label input:checked + .checkmark::after { 
+  content:'✔';
+  color:white;
+  font-size:14px;
+  font-weight:700;
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  line-height:1;
+}
+.check-text { font-size:14px;color:var(--text); }
+.check-text strong { color:var(--teal2); }

@@ -1,0 +1,205 @@
+<!-- features/utilisateurs/modifier-utilisateur/modifier-utilisateur.component.html -->
+<div class="page-layout">
+  <app-sidebar />
+
+  <div class="page-content">
+    <app-topbar titre="Modifier le compte" sousTitre="Modifier les informations d'un utilisateur" />
+
+    <div class="main-area">
+
+      <!-- ── Utilisateur introuvable ── -->
+      @if (introuvable()) {
+        <div class="not-found">
+          <div class="nf-icon">
+            <i class="fa-regular fa-user"></i>
+          </div>
+          <h2>Compte introuvable</h2>
+          <p>Cet utilisateur n'existe pas ou a été supprimé.</p>
+          <a routerLink="/utilisateurs" class="btn btn-primary">
+            <i class="fa-solid fa-arrow-left"></i> Retour à la liste
+          </a>
+        </div>
+      } @else {
+
+        <!-- ── En-tête ── -->
+        <div class="page-header">
+          <div class="page-header-left">
+            <h1>Modifier le compte</h1>
+            <p>Les champs marqués * sont obligatoires</p>
+          </div>
+          <a routerLink="/utilisateurs" class="btn btn-outline">
+            <i class="fa-solid fa-arrow-left"></i> Retour
+          </a>
+        </div>
+
+        <!-- ── Alerte compte propre ── -->
+        @if (estSonPropre()) {
+          <div class="alert-warning">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            Vous modifiez votre propre compte. Si vous changez votre email, vous devrez vous reconnecter.
+          </div>
+        }
+
+        <!-- ── Succès ── -->
+        @if (succes()) {
+          <div class="alert-success">
+            <i class="fa-solid fa-circle-check"></i>
+            Compte modifié avec succès ! Redirection...
+          </div>
+        }
+
+        <!-- ── Erreurs ── -->
+        @if (erreurs().length > 0) {
+          <div class="alert-danger">
+            @for (e of erreurs(); track e) {
+              <div>
+                <i class="fa-solid fa-triangle-exclamation"></i> {{ e }}
+              </div>
+            }
+          </div>
+        }
+
+        <!-- ── Formulaire informations ── -->
+        <div class="card">
+          <div class="section-title">
+            <div class="dot"></div> Informations du compte
+          </div>
+
+          <div class="form-grid">
+
+            <!-- Nom -->
+            <div class="form-group full">
+              <label>Nom complet *</label>
+              <input type="text" class="form-control"
+                     placeholder="ex: Dr. Ahmed Ben Ali"
+                     [value]="nom()"
+                     (input)="nom.set($any($event.target).value)" />
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+              <label>Adresse email *</label>
+              <input type="email" class="form-control"
+                     placeholder="ex: ahmed@gmail.com"
+                     [value]="email()"
+                     (input)="email.set($any($event.target).value)" />
+            </div>
+
+            <!-- Rôle -->
+            <div class="form-group">
+              <label>Rôle *</label>
+              <select class="form-control"
+                      [value]="role()"
+                      (change)="role.set($any($event.target).value)"
+                      [disabled]="estSonPropre()">
+                <option value="medecin">Médecin</option>
+                <option value="admin">Administrateur</option>
+              </select>
+
+              @if (estSonPropre()) {
+                <small class="hint">
+                  <i class="fa-solid fa-lock"></i> Vous ne pouvez pas modifier votre propre rôle.
+                </small>
+              }
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── Mot de passe ── -->
+        <div class="card">
+          <div class="section-title">
+            <div class="dot"></div> Changer le mot de passe
+            <span class="optionnel">(optionnel)</span>
+          </div>
+
+          <p class="mdp-info">
+            Laissez ce champ vide pour conserver le mot de passe actuel.
+          </p>
+
+          <div class="form-group">
+            <label>Nouveau mot de passe</label>
+            <div class="password-wrap">
+              <input [type]="showPassword() ? 'text' : 'password'"
+                     class="form-control"
+                     placeholder="Laisser vide pour ne pas changer..."
+                     [value]="password()"
+                     (input)="password.set($any($event.target).value)" />
+              <button class="show-btn" type="button" (click)="togglePassword()">
+                <i [class]="showPassword() ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Strength -->
+          @if (password().length > 0) {
+            <div class="password-strength">
+              <div class="strength-bar">
+                <div class="strength-fill"
+                     [class]="password().length >= 8 ? 'fort' : password().length >= 4 ? 'moyen' : 'faible'"
+                     [style.width]="(password().length >= 8 ? 100 : password().length >= 4 ? 60 : 30) + '%'">
+                </div>
+              </div>
+
+              <span class="strength-label"
+                    [class]="password().length >= 8 ? 'fort' : password().length >= 4 ? 'moyen' : 'faible'">
+
+                <i class="fa-solid"
+                   [class.fa-check-circle]="password().length >= 8"
+                   [class.fa-triangle-exclamation]="password().length >= 4 && password().length < 8"
+                   [class.fa-times-circle]="password().length < 4">
+                </i>
+
+                {{ password().length >= 8 ? 'Fort' : password().length >= 4 ? 'Moyen' : 'Faible' }}
+              </span>
+            </div>
+          }
+        </div>
+
+        <!-- ── Aperçu du rôle ── -->
+        <div class="card role-preview" [class.admin-preview]="role() === 'admin'">
+          <div class="role-icon">
+            <i class="fa-solid"
+               [class.fa-shield-halved]="role() === 'admin'"
+               [class.fa-stethoscope]="role() !== 'admin'">
+            </i>
+          </div>
+
+          <div>
+            <div class="role-titre">
+              {{ role() === 'admin' ? 'Administrateur' : 'Médecin' }}
+            </div>
+
+            <div class="role-desc">
+              @if (role() === 'admin') {
+                Accès complet : patients, consultations, comptes et paramètres.
+              } @else {
+                Accès aux patients et consultations uniquement.
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Actions ── -->
+        <div class="form-actions">
+          <a routerLink="/utilisateurs" class="btn btn-outline">
+            <i class="fa-solid fa-xmark"></i> Annuler
+          </a>
+
+          <button class="btn btn-primary"
+                  [disabled]="chargement() || succes()"
+                  (click)="enregistrer()">
+
+            @if (chargement()) {
+              <i class="fa-solid fa-spinner fa-spin"></i> Enregistrement...
+            } @else {
+              <i class="fa-solid fa-floppy-disk"></i> Enregistrer les modifications
+            }
+
+          </button>
+        </div>
+
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,200 @@
+<!-- features/patients/details-patient/details-patient.component.html -->
+<div class="page-layout">
+  <app-sidebar />
+
+  <div class="page-content">
+
+    @if (patient()) {
+      <app-topbar [titre]="patient()!.prenom + ' ' + patient()!.nom"
+                  [sousTitre]="patient()!.id + ' · ' + patient()!.age + ' ans'" />
+
+      <div class="main-area">
+
+        <div class="detail-layout">
+
+          <!-- ── COLONNE GAUCHE : profil ── -->
+          <div class="col-left">
+
+            <div class="card profile-card">
+              <div class="profile-banner">
+                <div class="profile-avatar" [style.background]="patient()!.couleur">
+                  {{ patient()!.initiales }}
+                </div>
+              </div>
+
+              <div class="profile-body">
+                <div class="profile-name">{{ patient()!.prenom }} {{ patient()!.nom }}</div>
+                <div class="profile-id">{{ patient()!.id }} · {{ patient()!.age }} ans · {{ patient()!.sexe === 'M' ? 'Masculin' : 'Féminin' }}</div>
+
+                <span class="badge" [class]="badgeStatut(patient()!.statutPatient)" style="margin-bottom:16px;display:inline-flex">
+                  {{ patient()!.statutPatient }}
+                </span>
+
+                <div class="info-list">
+                  <div class="info-row"><span>Groupe sanguin</span><strong>{{ patient()!.sanguin }}</strong></div>
+                  <div class="info-row"><span>Téléphone</span><strong>{{ patient()!.telephone }}</strong></div>
+
+                  @if (patient()!.email) {
+                    <div class="info-row"><span>Email</span><strong>{{ patient()!.email }}</strong></div>
+                  }
+
+                  <div class="info-row"><span>Inscrit le</span><strong>{{ patient()!.dateInscription }}</strong></div>
+                  <div class="info-row"><span>Consultations</span><strong>{{ consultations().length }}</strong></div>
+                  <div class="info-row"><span>Revenu généré</span><strong class="teal">{{ revenuTotal() }} DT</strong></div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="sub-label">Profil médical</div>
+
+                @if (patient()!.isChronique) {
+                  <div class="chrono-badge">
+                    <span class="badge badge-critical">
+                      <i class="fa-solid fa-triangle-exclamation"></i> Chronique
+                    </span>
+                    <span class="maladie">{{ patient()!.maladieChronique }}</span>
+                  </div>
+                } @else {
+                  <span class="badge badge-info">
+                    <i class="fa-regular fa-circle-check"></i> Non chronique
+                  </span>
+                }
+
+                @if (patient()!.allergies.length > 0) {
+                  <div class="divider"></div>
+                  <div class="sub-label">Allergies connues</div>
+
+                  <div class="tags-row">
+                    @for (a of patient()!.allergies; track a) {
+                      <span class="tag tag-red">
+                        <i class="fa-solid fa-circle-exclamation"></i> {{ a }}
+                      </span>
+                    }
+                  </div>
+                }
+
+                @if (patient()!.poids || patient()!.taille) {
+                  <div class="divider"></div>
+                  <div class="sub-label">Mesures</div>
+
+                  <div class="vital-grid">
+
+                    @if (patient()!.poids) {
+                      <div class="vital-box">
+                        <div class="v-label">Poids</div>
+                        <div class="v-val">{{ patient()!.poids }}</div>
+                        <div class="v-unit">kg</div>
+                      </div>
+                    }
+
+                    @if (patient()!.taille) {
+                      <div class="vital-box">
+                        <div class="v-label">Taille</div>
+                        <div class="v-val">{{ patient()!.taille }}</div>
+                        <div class="v-unit">cm</div>
+                      </div>
+                    }
+
+                  </div>
+                }
+
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="action-btns">
+
+              <a [routerLink]="['/patients', id, 'modifier']" class="btn btn-primary"
+                 style="width:100%;justify-content:center">
+                <i class="fa-solid fa-pen"></i> Modifier la fiche
+              </a>
+
+              <a [routerLink]="['/consultations/ajouter']"
+                 [queryParams]="{patient: id}"
+                 class="btn btn-outline"
+                 style="width:100%;justify-content:center">
+                <i class="fa-solid fa-file-medical"></i> Nouvelle consultation
+              </a>
+
+            </div>
+
+          </div>
+
+          <!-- ── COLONNE DROITE ── -->
+          <div class="col-right">
+
+            <div class="card">
+              <div class="section-title"><div class="dot"></div> Historique des consultations</div>
+
+              @for (c of consultations(); track c.id) {
+                <div class="consult-item">
+
+                  <div class="consult-icon">
+                    <i class="fa-solid"
+                       [class.fa-triangle-exclamation]="c.type === 'Urgence'"
+                       [class.fa-flask]="c.type === 'Bilan annuel'"
+                       [class.fa-clipboard-list]="c.type !== 'Urgence' && c.type !== 'Bilan annuel'">
+                    </i>
+                  </div>
+
+                  <div class="consult-body">
+                    <div class="consult-title">{{ c.type }}</div>
+                    <div class="consult-desc">{{ c.motif }}</div>
+
+                    <div class="consult-tags">
+                      <span class="badge badge-info">{{ c.tension }}</span>
+                      <span class="badge badge-stable">{{ c.pouls }} bpm</span>
+
+                      <span class="badge" [class]="badgeStatut(c.statutLorsDeConsultation)">
+                        {{ c.statutLorsDeConsultation }} – {{ c.montant }} DT
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="consult-date">
+                    <div>{{ c.date }}</div>
+
+                    <a [routerLink]="['/consultations', c.id]" class="btn btn-outline btn-sm" style="margin-top:8px">
+                      <i class="fa-solid fa-eye"></i> Voir
+                    </a>
+                  </div>
+
+                </div>
+              } @empty {
+                <div class="empty-consult">
+                  <p>Aucune consultation enregistrée pour ce patient.</p>
+
+                  <a [routerLink]="['/consultations/ajouter']"
+                     [queryParams]="{patient: id}"
+                     class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-plus"></i> Ajouter une consultation
+                  </a>
+                </div>
+              }
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    } @else {
+      <div class="main-area">
+        <div class="card" style="text-align:center;padding:60px">
+
+          <div style="font-size:40px;margin-bottom:16px">
+            <i class="fa-solid fa-face-frown"></i>
+          </div>
+
+          <p>Patient introuvable.</p>
+
+          <a routerLink="/patients" class="btn btn-primary" style="margin-top:16px">
+            <i class="fa-solid fa-arrow-left"></i> Retour à la liste
+          </a>
+
+        </div>
+      </div>
+    }
+
+  </div>
+</div>

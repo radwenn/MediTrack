@@ -1,0 +1,77 @@
+<!-- shared/components/date-range-picker/date-range-picker.component.html -->
+
+<!-- ── Bouton déclencheur ── -->
+<div class="picker-wrap">
+  <button class="picker-btn" [class.active]="ouvert() || label()" (click)="toggle()">
+
+    <span class="picker-icon">
+      <i class="fa-regular fa-calendar"></i>
+    </span>
+
+    <span class="picker-label">
+      {{ label() || placeholder() }}
+    </span>
+
+    <span class="picker-caret">
+      <i class="fa-solid" [class.fa-chevron-up]="ouvert()" [class.fa-chevron-down]="!ouvert()"></i>
+    </span>
+
+    <!-- Croix reset -->
+    @if (label()) {
+      <span class="picker-reset" (click)="reset($event)">
+        <i class="fa-solid fa-xmark"></i>
+      </span>
+    }
+  </button>
+
+  <!-- ── Dropdown calendrier ── -->
+  @if (ouvert()) {
+    <div class="calendar-dropdown">
+
+      <!-- Navigation mois -->
+      <div class="cal-header">
+        <button class="nav-btn" (click)="moisPrecedent()">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+
+        <span class="cal-mois">{{ nomMois() }}</span>
+
+        <button class="nav-btn" (click)="moisSuivant()">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+
+      <!-- Noms des jours -->
+      <div class="cal-grid">
+        @for (j of ['Lu','Ma','Me','Je','Ve','Sa','Di']; track j) {
+          <div class="jour-nom">{{ j }}</div>
+        }
+
+        <!-- Cases -->
+        @for (case of jours(); track $index) {
+          @if (case.vide) {
+            <div></div>
+          } @else {
+            <div
+              [class]="classesJour(case.date)"
+              (click)="selectionnerJour(case.date)"
+              (mouseenter)="survoler(case.date)"
+              (mouseleave)="quitterSurvol()">
+              {{ case.jouDuMois }}
+            </div>
+          }
+        }
+      </div>
+
+      <!-- Aide contextuelle -->
+      <div class="cal-hint">
+        @if (!debutSel()) {
+          <i class="fa-regular fa-hand-pointer"></i> Cliquez sur une date de début
+        } @else if (!finSel()) {
+          <i class="fa-regular fa-hand-pointer"></i> Cliquez sur une date de fin
+        }
+      </div>
+
+    </div>
+  }
+</div>

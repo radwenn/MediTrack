@@ -1,0 +1,79 @@
+<!-- shared/components/sidebar/sidebar.component.html — 🆕 lien Paramètres ajouté -->
+<aside class="sidebar">
+  <!-- ══════════════════════════════════
+       PROFIL UTILISATEUR
+       ══════════════════════════════════ -->
+  <div class="sidebar-user">
+    <div class="user-avatar">
+      @if (user()) {
+        {{ user()!.nom.slice(0, 2).toUpperCase() }}
+      } @else {
+        DR
+      }
+    </div>
+    <div class="user-info">
+      <div class="user-name">{{ user()?.nom ?? 'Dr. foulen' }}</div>
+      <div class="user-role">Médecin généraliste</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       NAVIGATION PRINCIPALE
+       ══════════════════════════════════ -->
+  <nav class="nav-section">
+    <!-- Section Principal -->
+    <div class="nav-label">Principal</div>
+    <div class="nav-items">
+      <a class="nav-item" routerLink="/dashboard" routerLinkActive="active">
+        <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span>
+        <span class="nav-text">Tableau de bord</span>
+      </a>
+
+      <a class="nav-item" routerLink="/patients" routerLinkActive="active">
+        <span class="nav-icon"><i class="fa-solid fa-users"></i></span>
+        <span class="nav-text">Patients</span>
+        <span class="nav-badge">{{ nbPatients().totalPatients }}</span>
+      </a>
+
+      <a class="nav-item" routerLink="/consultations" routerLinkActive="active">
+        <span class="nav-icon"><i class="fa-solid fa-notes-medical"></i></span>
+        <span class="nav-text">Consultations</span>
+      </a>
+    </div>
+
+    <!-- Section Admin (visible uniquement pour les admins) -->
+    @if (isAdmin()) {
+      <div class="nav-label" style="margin-top: 24px;">Administration</div>
+      <div class="nav-items">
+        <a class="nav-item" routerLink="/utilisateurs" routerLinkActive="active">
+          <span class="nav-icon"><i class="fa-solid fa-user-gear"></i></span>
+          <span class="nav-text">Utilisateurs</span>
+        </a>
+      </div>
+    }
+
+    <!-- Section Compte -->
+    <div class="nav-label" style="margin-top: 24px;">Compte</div>
+    <div class="nav-items">
+      <a class="nav-item" routerLink="/parametres" routerLinkActive="active">
+        <span class="nav-icon"><i class="fa-solid fa-gear"></i></span>
+        <span class="nav-text">Paramètres</span>
+      </a>
+
+      <a class="nav-item nav-logout" (click)="logout()" style="cursor:pointer">
+        <span class="nav-icon"><i class="fa-solid fa-right-from-bracket"></i></span>
+        <span class="nav-text">Déconnexion</span>
+      </a>
+    </div>
+
+  </nav>
+
+  <!-- ══════════════════════════════════
+       LOGO FOOTER
+       ══════════════════════════════════ -->
+   <div class="sidebar-logo">
+    <div class="logo-icon">✚</div>
+    <div class="logo-text">Medi<span>Track</span></div>
+  </div>
+
+</aside>

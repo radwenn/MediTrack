@@ -1,0 +1,168 @@
+<!-- features/utilisateurs/liste-utilisateurs/liste-utilisateurs.component.html -->
+<div class="page-layout">
+  <app-sidebar />
+
+  <div class="page-content">
+    <app-topbar
+      titre="Gestion des comptes"
+      [sousTitre]="stats().total + ' compte(s) enregistré(s)'" />
+
+    <div class="main-area">
+
+      <!-- ── Cartes statistiques ── -->
+      <div class="stats-row">
+
+        <div class="stat-card">
+          <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+          <div class="stat-info">
+            <div class="stat-num">{{ stats().total }}</div>
+            <div class="stat-lab">Total comptes</div>
+          </div>
+        </div>
+
+        <div class="stat-card admin">
+          <div class="stat-icon"><i class="fa-solid fa-shield"></i></div>
+          <div class="stat-info">
+            <div class="stat-num">{{ stats().admins }}</div>
+            <div class="stat-lab">Administrateurs</div>
+          </div>
+        </div>
+
+        <div class="stat-card medecin">
+          <div class="stat-icon"><i class="fa-solid fa-stethoscope"></i></div>
+          <div class="stat-info">
+            <div class="stat-num">{{ stats().medecins }}</div>
+            <div class="stat-lab">Médecins</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Barre de recherche + filtres ── -->
+      <div class="controls-bar">
+
+        <div class="search-wrap">
+          <span><i class="fa-solid fa-magnifying-glass"></i></span>
+          <input
+            type="text"
+            placeholder="Rechercher par nom ou email..."
+            class="search-input"
+            [value]="recherche()"
+            (input)="recherche.set($any($event.target).value)" />
+        </div>
+
+        <select class="filter-select"
+                [value]="filtreRole()"
+                (change)="filtreRole.set($any($event.target).value)">
+          <option value="tous">Tous les rôles</option>
+          <option value="admin">Administrateurs</option>
+          <option value="medecin">Médecins</option>
+        </select>
+
+        <a routerLink="/utilisateurs/ajouter" class="btn btn-primary">
+          <i class="fa-solid fa-user-plus"></i> Nouveau compte
+        </a>
+
+      </div>
+
+      <!-- ── Tableau des utilisateurs ── -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nom</th>
+              <th>Email</th>
+              <th>Rôle</th>
+              <th>Date de création</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            @for (u of utilisateursFiltres(); track u.id) {
+              <tr [class.row-moi]="u.email === userConnecte()?.email">
+                <td>
+                  <!-- Avatar avec initiales -->
+                  <div class="avatar">
+                    {{ u.nom.split(' ')[0][0] }}{{ u.nom.split(' ')[1] ? u.nom.split(' ')[1][0] : '' }}
+                  </div>
+                </td>
+                <td>
+                  <strong>{{ u.nom }}</strong>
+                  @if (u.email === userConnecte()?.email) {
+                    <span class="moi-badge">Vous</span>
+                  }
+                </td>
+                <td class="email-cell">{{ u.email }}</td>
+                <td>
+                  <span class="badge" [class]="badgeRole(u.role)">
+                    <i [class]="u.role === 'admin' ? 'fa-solid fa-shield' : 'fa-solid fa-stethoscope'" style="margin-right:4px;"></i>
+                    {{ u.role === 'admin' ? 'Admin' : 'Médecin' }}
+                  </span>
+                </td>
+                <td>{{ u.dateCreation }}</td>
+                <td>
+                  <div class="actions-cell">
+                    <!-- Modifier -->
+                    <a [routerLink]="['/utilisateurs', u.id, 'modifier']"
+                       class="btn btn-outline btn-sm">
+                      <i class="fa-regular fa-pen-to-square"></i> Modifier
+                    </a>
+
+                    <!-- Supprimer — désactivé pour son propre compte -->
+                    @if (u.email !== userConnecte()?.email) {
+                      <button class="btn btn-danger btn-sm"
+                              (click)="ouvrirModal(u)">
+                        <i class="fa-regular fa-trash-can"></i> Supprimer
+                      </button>
+                    } @else {
+                      <button class="btn btn-outline btn-sm" disabled title="Impossible de supprimer votre propre compte">
+                        <i class="fa-solid fa-lock"></i>
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+
+            @empty {
+              <tr>
+                <td colspan="6" class="empty-state">
+                  <div><i class="fa-regular fa-user"></i></div>
+                  <p>Aucun compte trouvé.</p>
+                  <a routerLink="/utilisateurs/ajouter" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-user-plus"></i> + Ajouter
+                  </a>
+                </td>
+              </tr>
+            }
+
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal de confirmation de suppression ── -->
+@if (modalOuverte()) {
+  <div class="modal-overlay open" (click)="fermerModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <h3 class="modal-title">Supprimer ce compte ?</h3>
+      <p class="modal-sub">
+        Vous êtes sur le point de supprimer le compte de
+        <strong>{{ nomASupprimer() }}</strong>.
+        Cette action est irréversible.
+      </p>
+      <div class="modal-actions">
+        <button class="btn btn-outline" (click)="fermerModal()">Annuler</button>
+        <button class="btn btn-danger" (click)="confirmerSuppression()">
+          <i class="fa-regular fa-trash-can"></i> Oui, supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+}

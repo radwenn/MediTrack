@@ -1,0 +1,99 @@
+<!-- Font Awesome CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- features/auth/auth.component.html -->
+<div class="login-page">
+
+  <!-- ── Panneau gauche ── -->
+  <div class="left">
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
+
+    <div class="logo">
+      <div class="logo-icon"><i class="fa-solid fa-plus"></i></div>
+      <div class="logo-text">Medi<span>Track</span></div>
+    </div>
+
+    <div class="hero-content">
+      <div class="hero-tag">
+        <span class="pulse-dot"></span>
+        Système de Suivi Médical
+      </div>
+      <h1 class="hero-title">
+        La santé<br>de vos patients,<br><em>sous contrôle.</em>
+      </h1>
+      <p class="hero-desc">
+        Gérez les fiches patients, les consultations et les revenus de votre cabinet depuis une seule interface.
+      </p>
+      <!-- <div class="stats">
+        <div class="stat">
+          <div class="stat-num">10</div>
+          <div class="stat-label">Patients actifs</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">98%</div>
+          <div class="stat-label">Taux de satisfaction</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">24/7</div>
+          <div class="stat-label">Disponibilité</div>
+        </div>
+      </div> -->
+    </div>
+  </div>
+
+  <!-- ── Panneau droit : formulaire ── -->
+  <div class="right">
+    <div class="form-card">
+
+      <div class="form-header">
+        <h2 class="form-title">Bienvenue</h2>
+        <p class="form-subtitle">Connectez-vous à votre espace de gestion</p>
+      </div>
+
+      <!-- Email -->
+      <div class="field">
+        <label>Adresse e-mail</label>
+        <div class="input-wrap">
+          <span class="input-icon"><i class="fa-solid fa-envelope"></i></span>
+          <input type="email" [(ngModel)]="email"
+                 placeholder="foulen@gmail.com"
+                 (keyup.enter)="login()"/>
+        </div>
+      </div>
+
+      <!-- Mot de passe -->
+      <div class="field">
+        <div class="field-row">
+          <label style="margin:0">Mot de passe</label>
+          <a href="#" class="forgot" (click)="$event.preventDefault()">Oublié ?</a>
+        </div>
+        <div class="input-wrap" style="margin-top:8px">
+          <span class="input-icon"><i class="fa-solid fa-lock"></i></span>
+          <input [type]="showPwd() ? 'text' : 'password'"
+                 [(ngModel)]="password"
+                 placeholder="••••••••"
+                 (keyup.enter)="login()"/>
+          <button class="show-pass" (click)="togglePwd()" type="button">
+            <i class="fa-solid" [class.fa-eye-slash]="showPwd()" [class.fa-eye]="!showPwd()"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Message d'erreur -->
+      @if (erreur()) {
+        <div class="error-msg">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          Identifiants invalides. Veuillez réessayer.
+        </div>
+      }
+
+      <!-- Bouton de connexion -->
+      <button class="btn-login" (click)="login()">
+        <span>Se connecter <i class="fa-solid fa-arrow-right"></i></span>
+      </button>
+
+    </div>
+  </div>
+</div>

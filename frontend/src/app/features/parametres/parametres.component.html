@@ -1,0 +1,221 @@
+<!-- features/parametres/parametres.component.html -->
+<div class="page-layout">
+  <app-sidebar />
+
+  <div class="page-content">
+    <app-topbar titre="Paramètres" sousTitre="Configuration du cabinet" />
+
+    <div class="main-area">
+
+      <!-- ══════════════════════════════════
+           PROFIL DU MÉDECIN
+           ══════════════════════════════════ -->
+      <div class="card">
+        <div class="section-header">
+          <div class="section-title">
+            <div class="dot"></div> Profil du médecin
+          </div>
+          <!-- Bouton Modifier — visible seulement quand on n'est pas en mode édition -->
+          @if (!modeEditionProfil()) {
+            <button class="btn btn-outline" (click)="activerEditionProfil()">
+              <i class="fa-solid fa-pen"></i> Modifier
+            </button>
+          }
+        </div>
+
+        <!-- Message de succès après sauvegarde -->
+        @if (succesProfil()) {
+          <div class="alert-success">
+            <i class="fa-solid fa-circle-check"></i>
+            Profil mis à jour avec succès.
+          </div>
+        }
+
+        <!-- ── MODE AFFICHAGE (champs désactivés) ── -->
+        @if (!modeEditionProfil()) {
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nom complet</label>
+              <input type="text" class="form-control" [value]="user()?.nom ?? ''" disabled />
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" class="form-control" [value]="user()?.email ?? ''" disabled />
+            </div>
+          </div>
+        }
+
+        <!-- ── MODE ÉDITION (champs actifs) ── -->
+        @if (modeEditionProfil()) {
+
+          <!-- Message d'erreur -->
+          @if (erreurProfil()) {
+            <div class="alert-warning">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              {{ erreurProfil() }}
+            </div>
+          }
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Nom complet</label>
+              <input
+                type="text"
+                class="form-control"
+                [ngModel]="editNom()"
+                (ngModelChange)="editNom.set($event)"
+                placeholder="Votre nom" />
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input
+                type="email"
+                class="form-control"
+                [ngModel]="editEmail()"
+                (ngModelChange)="editEmail.set($event)"
+                placeholder="Votre email" />
+            </div>
+          </div>
+
+          <!-- Boutons d'action -->
+          <div class="tarif-actions">
+            <button
+              class="btn btn-primary"
+              (click)="sauvegarderProfil()"
+              [disabled]="chargementProfil()">
+              @if (chargementProfil()) {
+                <i class="fa-solid fa-spinner fa-spin"></i> Enregistrement...
+              } @else {
+                <i class="fa-solid fa-floppy-disk"></i> Enregistrer
+              }
+            </button>
+            <button class="btn btn-outline" (click)="annulerEditionProfil()">
+              Annuler
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- ══════════════════════════════════
+           TARIFICATION
+           ══════════════════════════════════ -->
+      <div class="card">
+
+        <div class="section-header">
+          <div>
+            <div class="section-title">
+              <div class="dot"></div> Tarifs de consultation
+            </div>
+            <p class="section-desc">
+              Ces tarifs s'appliquent aux <strong>nouvelles consultations</strong>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        @if (succesTarifs()) {
+          <div class="alert-success">
+            <i class="fa-solid fa-circle-check"></i>
+            Tarifs enregistrés et appliqués aux nouvelles consultations.
+          </div>
+        }
+
+        @if (erreurTarifs()) {
+          <div class="alert-warning">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            {{ erreurTarifs() }}
+          </div>
+        }
+
+        <!-- Grille -->
+        <div class="tarifs-grid">
+
+          <!-- Régulier -->
+          <div class="tarif-card regulier">
+            <div class="tarif-card-header">
+              <div class="tarif-icon">
+                <i class="fa-solid fa-hospital"></i>
+              </div>
+              <div>
+                <div class="tarif-nom">Patient Régulier</div>
+                <div class="tarif-desc">Prise en charge partielle CNAM</div>
+              </div>
+            </div>
+
+            <div class="tarif-input-wrap">
+              <button class="tarif-btn" (click)="incrementer('regulier', -5)">
+                <i class="fa-solid fa-minus"></i>
+              </button>
+
+              <div class="tarif-input-group">
+                <input
+                  type="number"
+                  class="tarif-input"
+                  [value]="tarifRegulierEdit()"
+                  (input)="tarifRegulierEdit.set(+$any($event.target).value)"
+                  min="1" step="1" />
+                <span class="tarif-devise">DT</span>
+              </div>
+
+              <button class="tarif-btn" (click)="incrementer('regulier', +5)">
+                <i class="fa-solid fa-plus"></i>
+              </button>
+            </div>
+
+            <div class="tarif-patients">
+              <i class="fa-solid fa-users"></i>
+              {{ stats().reguliers }} patient(s) concerné(s)
+            </div>
+          </div>
+
+          <!-- Non régulier -->
+          <div class="tarif-card non-regulier">
+            <div class="tarif-card-header">
+              <div class="tarif-icon">
+                <i class="fa-regular fa-user"></i>
+              </div>
+              <div>
+                <div class="tarif-nom">Patient Non Régulier</div>
+                <div class="tarif-desc">Payé directement par le patient</div>
+              </div>
+            </div>
+
+            <div class="tarif-input-wrap">
+              <button class="tarif-btn" (click)="incrementer('nonRegulier', -5)">
+                <i class="fa-solid fa-minus"></i>
+              </button>
+
+              <div class="tarif-input-group">
+                <input
+                  type="number"
+                  class="tarif-input"
+                  [value]="tarifNonRegulierEdit()"
+                  (input)="tarifNonRegulierEdit.set(+$any($event.target).value)"
+                  min="1" step="1" />
+                <span class="tarif-devise">DT</span>
+              </div>
+
+              <button class="tarif-btn" (click)="incrementer('nonRegulier', +5)">
+                <i class="fa-solid fa-plus"></i>
+              </button>
+            </div>
+
+            <div class="tarif-patients">
+              <i class="fa-solid fa-users"></i>
+              {{ stats().nonReguliers }} patient(s) concerné(s)
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Actions -->
+        <div class="tarif-actions">
+          <button class="btn btn-primary" (click)="enregistrerTarifs()">
+            <i class="fa-solid fa-floppy-disk"></i> Enregistrer les tarifs
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

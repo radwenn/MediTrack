@@ -1,0 +1,76 @@
+/* features/utilisateurs/ajouter-utilisateur/ajouter-utilisateur.component.css */
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+/* ── Champ mot de passe avec bouton œil ── */
+.password-wrap {
+  position: relative;
+}
+.password-wrap .form-control {
+  padding-right: 48px; /* laisser de la place pour le bouton */
+}
+.show-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--muted);
+}
+
+/* ── Indicateur de force ── */
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.strength-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.strength-fill {
+  height: 100%;
+  border-radius: 100px;
+  transition: width 0.3s, background 0.3s;
+}
+.strength-fill.faible { background: var(--red); }
+.strength-fill.moyen  { background: var(--amber); }
+.strength-fill.fort   { background: var(--teal2); }
+
+.strength-label         { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.strength-label.faible  { color: var(--red); }
+.strength-label.moyen   { color: #B27E00; }
+.strength-label.fort    { color: var(--teal2); }
+
+/* ── Aperçu du rôle ── */
+.role-preview {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: #F0F4FF;
+  border: 1.5px solid var(--blue);
+  padding: 20px 24px;
+}
+
+.role-preview.admin-preview {
+  background: #FFF5F5;
+  border-color: var(--red);
+}
+
+.role-icon  { font-size: 40px; }
+.role-titre { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.role-desc  { font-size: 13px; color: var(--muted); line-height: 1.5; }

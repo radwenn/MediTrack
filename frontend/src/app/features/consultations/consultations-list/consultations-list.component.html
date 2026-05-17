@@ -1,0 +1,145 @@
+<!-- features/consultations/consultations-list/consultations-list.component.html -->
+<div class="page-layout">
+  <app-sidebar />
+  <div class="page-content">
+    <app-topbar titre="Consultations"
+      [sousTitre]="consultationsFiltrees().length + ' consultation(s) · ' + revenuFiltree() + ' DT'" />
+
+    <div class="main-area">
+
+      <!-- Contrôles -->
+      <div class="controls-bar">
+
+        <div class="search-wrap">
+          <span class="search-icon">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </span>
+          <input type="text" placeholder="Patient, diagnostic, ID..."
+                 class="search-input"
+                 [value]="recherche()"
+                 (input)="recherche.set($any($event.target).value)" />
+        </div>
+
+        <select class="filter-select" [value]="filtreType()"
+                (change)="filtreType.set($any($event.target).value)">
+          <option value="tous">Tous les types</option>
+          <option value="Consultation générale">Consultation générale</option>
+          <option value="Suivi traitement">Suivi traitement</option>
+          <option value="Urgence">Urgence</option>
+          <option value="Bilan annuel">Bilan annuel</option>
+        </select>
+
+        <select class="filter-select" [value]="filtreStatut()"
+                (change)="filtreStatut.set($any($event.target).value)">
+          <option value="tous">Tous les statuts</option>
+          <option value="Régulier">Régulier</option>
+          <option value="Non Régulier">Non Régulier</option>
+        </select>
+
+        <app-date-range-picker
+          placeholder="Période"
+          (rangeChange)="onRangeChange($event)" />
+
+        <a routerLink="/consultations/ajouter" class="btn btn-primary">
+          <i class="fa-solid fa-plus"></i> Nouvelle consultation
+        </a>
+
+      </div>
+
+      <!-- Tableau -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Patient</th>
+              <th>Type</th>
+              <th>Constantes</th>
+              <th>Statut</th>
+              <th>Montant</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of consultationsFiltrees(); track c.id) {
+              <tr>
+                <td>{{ c.date }}</td>
+
+                <td>
+                  <strong>{{ c.patientNom }}</strong><br>
+                  <span style="font-size:11px;color:var(--muted)">{{ c.id }}</span>
+                </td>
+
+                <td>
+                  <span class="badge" [class]="badgeType(c.type)">
+                    {{ c.type }}
+                  </span>
+                </td>
+
+                <!-- Constantes -->
+                <td>
+                  <span class="constante">
+                    <i class="fa-solid fa-stethoscope"></i> {{ c.tension }}
+                  </span>
+                  <span class="constante">
+                    <i class="fa-solid fa-heart-pulse"></i> {{ c.pouls }} bpm
+                  </span>
+                  <span class="constante">
+                    <i class="fa-solid fa-temperature-three-quarters"></i> {{ c.temperature }}°C
+                  </span>
+                </td>
+
+                <td>
+                  <span class="badge" [class]="badgeStatut(c.statutLorsDeConsultation)">
+                    {{ c.statutLorsDeConsultation }}
+                  </span>
+                </td>
+
+                <td>
+                  <strong class="montant">{{ c.montant }} DT</strong>
+                </td>
+
+                <!-- Actions -->
+                <td>
+                  <div class="actions-cell">
+                    <a [routerLink]="['/consultations', c.id]"
+                       class="btn btn-outline btn-sm"
+                       title="Voir">
+                      <i class="fa-regular fa-eye"></i>
+                    </a>
+
+                    <a [routerLink]="['/consultations', c.id, 'modifier']"
+                       class="btn btn-outline btn-sm"
+                       title="Modifier">
+                      <i class="fa-regular fa-pen-to-square"></i>
+                    </a>
+
+                    <button class="btn btn-danger btn-sm"
+                            title="Supprimer"
+                            (click)="supprimer(c.id)">
+                      <i class="fa-regular fa-trash-can"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+            } @empty {
+              <tr>
+                <td colspan="7" class="empty-state">
+                  <div>
+                    <i class="fa-regular fa-clipboard"></i>
+                  </div>
+                  <p>Aucune consultation trouvée.</p>
+                  <a routerLink="/consultations/ajouter" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-plus"></i> Ajouter
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>

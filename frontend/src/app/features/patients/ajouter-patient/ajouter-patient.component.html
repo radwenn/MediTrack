@@ -1,0 +1,189 @@
+<!-- features/patients/ajouter-patient/ajouter-patient.component.html -->
+<div class="page-layout">
+  <app-sidebar />
+
+  <div class="page-content">
+    <app-topbar titre="Nouveau Patient" sousTitre="Remplissez les informations de la fiche patient" />
+
+    <div class="main-area">
+
+      <!-- Message succès -->
+      @if (succes()) {
+        <div class="alert-success">
+          <i class="fa-solid fa-circle-check"></i>
+          Patient enregistré avec succès ! Redirection en cours...
+        </div>
+      }
+
+      <!-- Messages d'erreur -->
+      @if (erreurs().length > 0) {
+        <div class="alert-error">
+          @for (e of erreurs(); track e) {
+            <div>
+              <i class="fa-solid fa-triangle-exclamation"></i> {{ e }}
+            </div>
+          }
+        </div>
+      }
+
+      <div class="card">
+        <!-- INFORMATIONS -->
+        <div class="section-title">
+          <div class="dot"></div> Informations générales
+        </div>
+
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label>Prénom *</label>
+            <input type="text" class="form-control" placeholder="Foulen"
+                   [value]="prenom()" (input)="prenom.set($any($event.target).value)" />
+          </div>
+
+          <div class="form-group">
+            <label>Nom *</label>
+            <input type="text" class="form-control" placeholder="Fouleni"
+                   [value]="nom()" (input)="nom.set($any($event.target).value)" />
+          </div>
+
+          <div class="form-group">
+            <label>Âge *</label>
+            <input type="number" class="form-control" placeholder="Ex: 45" min="0" max="130"
+                   [value]="age()" (input)="age.set(+$any($event.target).value)" />
+          </div>
+
+          <div class="form-group">
+            <label>Sexe</label>
+            <select class="form-control" [value]="sexe()" (change)="sexe.set($any($event.target).value)">
+              <option value="M">Masculin</option>
+              <option value="F">Féminin</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Téléphone *</label>
+            <input type="tel" class="form-control" placeholder="Ex: 06 12 34 56 78"
+                   [value]="telephone()" (input)="telephone.set($any($event.target).value)" />
+          </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" class="form-control" placeholder="patient@email.com"
+                   [value]="email()" (input)="email.set($any($event.target).value)" />
+          </div>
+
+          <div class="form-group">
+            <label>Groupe sanguin</label>
+            <select class="form-control" [value]="sanguin()" (change)="sanguin.set($any($event.target).value)">
+              <option>A+</option><option>A-</option>
+              <option>B+</option><option>B-</option>
+              <option>O+</option><option>O-</option>
+              <option>AB+</option><option>AB-</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Statut patient *</label>
+            <select class="form-control" [value]="statutPatient()"
+                    (change)="statutPatient.set($any($event.target).value)">
+              <option value="Régulier">Régulier</option>
+              <option value="Non Régulier">Non Régulier</option>
+            </select>
+          </div>
+
+          <div class="form-group full">
+            <label>Adresse</label>
+            <input type="text" class="form-control" placeholder="Adresse complète"
+                   [value]="adresse()" (input)="adresse.set($any($event.target).value)" />
+          </div>
+
+          <div class="form-group full">
+            <label>Allergies connues</label>
+            <input type="text" class="form-control" placeholder="Ex: pénicilline, aspirine"
+                   [value]="allergies()" (input)="allergies.set($any($event.target).value)" />
+          </div>
+
+        </div>
+      </div>
+
+      <!-- MESURES -->
+      <div class="card">
+        <div class="section-title">
+          <div class="dot"></div> Mesures (optionnelles)
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Poids (kg)</label>
+            <input type="number" class="form-control" placeholder="Ex: 75" min="0"
+                   [value]="poids()" (input)="poids.set(+$any($event.target).value)" />
+          </div>
+
+          <div class="form-group">
+            <label>Taille (cm)</label>
+            <input type="number" class="form-control" placeholder="Ex: 175" min="0"
+                   [value]="taille()" (input)="taille.set(+$any($event.target).value)" />
+          </div>
+        </div>
+      </div>
+
+      <!-- PROFIL MÉDICAL -->
+      <div class="card">
+        <div class="section-title">
+          <div class="dot"></div> Profil médical
+        </div>
+
+        <div class="chronique-check">
+          <label class="checkbox-label">
+            <input type="checkbox"
+                   [checked]="isChronique()"
+                   (change)="isChronique.set($any($event.target).checked)" />
+            <span class="checkmark"></span>
+
+            <span class="check-text">
+              <i class="fa-solid fa-notes-medical"></i>
+              Ce patient souffre d'une <strong>maladie chronique</strong>
+            </span>
+          </label>
+        </div>
+
+        @if (isChronique()) {
+          <div class="form-group" style="margin-top:16px">
+            <label>Maladie chronique *</label>
+            <select class="form-control"
+                    [value]="maladieChronique()"
+                    (change)="maladieChronique.set($any($event.target).value)">
+              <option value="">-- Sélectionner --</option>
+              @for (m of maladiesChroniques; track m) {
+                <option [value]="m">{{ m }}</option>
+              }
+            </select>
+          </div>
+
+          @if (isAutre()) {
+            <div class="form-group">
+              <label>Préciser la maladie chronique *</label>
+              <input type="text" class="form-control"
+                     placeholder="Décrivez la maladie chronique..."
+                     [value]="autresMaladie()"
+                     (input)="autresMaladie.set($any($event.target).value)" />
+            </div>
+          }
+        }
+
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="form-actions">
+        <a routerLink="/patients" class="btn btn-outline">
+          <i class="fa-solid fa-xmark"></i> Annuler
+        </a>
+
+        <button class="btn btn-primary" (click)="enregistrer()">
+          <i class="fa-solid fa-user-plus"></i> Enregistrer le patient
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
